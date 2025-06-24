@@ -3,11 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, BookOpen, GraduationCap, TrendingUp, School, Building, UserCheck, LogOut } from "lucide-react";
+import { Users, BookOpen, GraduationCap, TrendingUp, School, Building, UserCheck, LogOut, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import Dashboard from "@/components/Dashboard";
 import AccountManagement from "@/components/AccountManagement";
+import CreditClassManagement from "@/components/CreditClassManagement";
+import StudentEnrollment from "@/components/StudentEnrollment";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -54,7 +56,7 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 bg-white shadow-sm">
+          <TabsList className="grid w-full grid-cols-9 bg-white shadow-sm">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               Dashboard
@@ -79,6 +81,10 @@ const AdminDashboard = () => {
               <School className="w-4 h-4" />
               Lớp HC
             </TabsTrigger>
+            <TabsTrigger value="credit-classes" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Lớp TC
+            </TabsTrigger>
             <TabsTrigger value="subjects" className="flex items-center gap-2">
               <BookOpen className="w-4 h-4" />
               Môn học
@@ -97,14 +103,13 @@ const AdminDashboard = () => {
             <AccountManagement />
           </TabsContent>
 
+          <TabsContent value="credit-classes">
+            <CreditClassManagement />
+          </TabsContent>
+
           {/* Other tabs will be implemented as separate components */}
           <TabsContent value="students">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quản lý sinh viên</CardTitle>
-                <CardDescription>Chức năng này sẽ được triển khai sau</CardDescription>
-              </CardHeader>
-            </Card>
+            <StudentEnrollment />
           </TabsContent>
 
           <TabsContent value="teachers">
