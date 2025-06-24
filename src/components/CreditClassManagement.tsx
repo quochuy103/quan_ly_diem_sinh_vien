@@ -108,6 +108,7 @@ const CreditClassManagement = () => {
     const newClass = {
       id: creditClasses.length + 1,
       ...formData,
+      subjectId: parseInt(formData.subjectId), // Convert string to number
       currentStudents: 0,
       status: "active",
       subjectName: mockSubjects.find(s => s.id === parseInt(formData.subjectId))?.name || "",
