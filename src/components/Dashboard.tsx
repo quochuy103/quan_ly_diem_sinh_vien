@@ -1,15 +1,15 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, BookOpen, GraduationCap, Building } from "lucide-react";
+import { Users, BookOpen, GraduationCap, TrendingUp } from "lucide-react";
 
 const mockData = {
   departments: [
-    { id: 1, code: "CNTT", name: "Công nghệ thông tin" },
-    { id: 2, code: "DTVT", name: "Điện tử viễn thông" },
-    { id: 3, code: "KT", name: "Kinh tế" },
-    { id: 4, code: "KTKT", name: "Kế toán" },
-    { id: 5, code: "MKT", name: "Marketing" }
+    { id: 1, name: "Công nghệ thông tin" },
+    { id: 2, name: "Điện tử viễn thông" },
+    { id: 3, name: "Kinh tế" },
+    { id: 4, name: "Kế toán" },
+    { id: 5, name: "Marketing" }
   ],
   classes: [
     { id: 1, name: "CNTT01", departmentId: 1 },
@@ -43,6 +43,14 @@ const mockData = {
     { id: 4, name: "Phạm Văn C", major: "Điện tử viễn thông", email: "c.pv@ptit.edu.vn", phone: "0444555666", subjectId: 5 },
     { id: 5, name: "Lê Thị D", major: "Kinh tế", email: "d.lt@ptit.edu.vn", phone: "0555666777", subjectId: 6 },
     { id: 6, name: "Hoàng Văn E", major: "Kế toán", email: "e.hv@ptit.edu.vn", phone: "0666777888", subjectId: 7 }
+  ],
+  grades: [
+    { id: 1, score: 8.5, semester: "HK1", academicYear: "2024-2025", studentId: "B24DCCC016", subjectId: 1 },
+    { id: 2, score: 9.0, semester: "HK1", academicYear: "2024-2025", studentId: "B24DCCC148", subjectId: 1 },
+    { id: 3, score: 7.5, semester: "HK1", academicYear: "2024-2025", studentId: "B24DCC215", subjectId: 2 },
+    { id: 4, score: 8.0, semester: "HK1", academicYear: "2024-2025", studentId: "B24DCCC016", subjectId: 2 },
+    { id: 5, score: 8.7, semester: "HK1", academicYear: "2024-2025", studentId: "B24DCVT125", subjectId: 5 },
+    { id: 6, score: 7.8, semester: "HK1", academicYear: "2024-2025", studentId: "B24DCKT087", subjectId: 6 }
   ]
 };
 
@@ -50,7 +58,7 @@ const Dashboard = () => {
   const totalStudents = mockData.students.length;
   const totalSubjects = mockData.subjects.length;
   const totalTeachers = mockData.teachers.length;
-  const totalDepartments = mockData.departments.length;
+  const averageGrade = mockData.grades.reduce((sum, grade) => sum + grade.score, 0) / mockData.grades.length;
 
   return (
     <div className="space-y-6">
@@ -90,43 +98,72 @@ const Dashboard = () => {
 
         <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Khoa</CardTitle>
-            <Building className="h-4 w-4" />
+            <CardTitle className="text-sm font-medium">Điểm TB</CardTitle>
+            <TrendingUp className="h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalDepartments}</div>
-            <p className="text-xs text-orange-100">Khoa đào tạo</p>
+            <div className="text-2xl font-bold">{averageGrade.toFixed(1)}</div>
+            <p className="text-xs text-orange-100">Điểm trung bình chung</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Thống kê theo khoa</CardTitle>
-          <CardDescription>Số lượng sinh viên và lớp theo từng khoa</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {mockData.departments.map(dept => {
-              const classCount = mockData.classes.filter(c => c.departmentId === dept.id).length;
-              const studentCount = mockData.students.filter(s => {
-                const studentClass = mockData.classes.find(c => c.id === s.classId);
-                return studentClass?.departmentId === dept.id;
-              }).length;
-              
-              return (
-                <div key={dept.id} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{dept.name}</p>
-                    <p className="text-sm text-gray-500">Mã khoa: {dept.code} - {classCount} lớp</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Thống kê theo khoa</CardTitle>
+            <CardDescription>Số lượng sinh viên theo từng khoa</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {mockData.departments.map(dept => {
+                const classCount = mockData.classes.filter(c => c.departmentId === dept.id).length;
+                const studentCount = mockData.students.filter(s => {
+                  const studentClass = mockData.classes.find(c => c.id === s.classId);
+                  return studentClass?.departmentId === dept.id;
+                }).length;
+                
+                return (
+                  <div key={dept.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{dept.name}</p>
+                      <p className="text-sm text-gray-500">{classCount} lớp</p>
+                    </div>
+                    <Badge variant="secondary">{studentCount} SV</Badge>
                   </div>
-                  <Badge variant="secondary">{studentCount} SV</Badge>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Điểm số gần đây</CardTitle>
+            <CardDescription>Các điểm vừa nhập gần đây</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {mockData.grades.slice(0, 4).map(grade => {
+                const student = mockData.students.find(s => s.id === grade.studentId);
+                const subject = mockData.subjects.find(s => s.id === grade.subjectId);
+                
+                return (
+                  <div key={grade.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{student?.name}</p>
+                      <p className="text-sm text-gray-500">{subject?.name}</p>
+                    </div>
+                    <Badge variant={grade.score >= 8 ? "default" : grade.score >= 6.5 ? "secondary" : "destructive"}>
+                      {grade.score}
+                    </Badge>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
