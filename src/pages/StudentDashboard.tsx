@@ -1,12 +1,15 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, LogOut, BookOpen, TrendingUp, Bell } from "lucide-react";
+import { GraduationCap, LogOut, BookOpen, Bell } from "lucide-react";
 import SubjectDetailDialog from "@/components/SubjectDetailDialog";
+import NotificationPopup from "@/components/NotificationPopup";
 
 const mockStudentData = {
   profile: {
@@ -33,6 +36,10 @@ const StudentDashboard = () => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notifications, setNotifications] = useState(mockStudentData.notifications);
+  const [selectedYear, setSelectedYear] = useState("2024-2025");
+  const [selectedSemester, setSelectedSemester] = useState("HK1");
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
@@ -48,8 +55,34 @@ const StudentDashboard = () => {
     setIsDetailDialogOpen(true);
   };
 
+  const handleMarkAsRead = (notificationId: number) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+    );
+    toast({
+      title: "Đã đánh dấu đã đọc",
+      description: "Thông báo đã được đánh dấu là đã đọc"
+    });
+  };
+
+  const handleYearChange = (year: string) => {
+    setSelectedYear(year);
+    toast({
+      title: "Đã thay đổi năm học",
+      description: `Năm học hiện tại: ${year}`
+    });
+  };
+
+  const handleSemesterChange = (semester: string) => {
+    setSelectedSemester(semester);
+    toast({
+      title: "Đã thay đổi học kỳ",
+      description: `Học kỳ hiện tại: ${semester}`
+    });
+  };
+
   const totalCredits = mockStudentData.grades.reduce((sum, grade) => sum + grade.credits, 0);
-  const unreadNotifications = mockStudentData.notifications.filter(n => !n.read).length;
+  const unreadNotifications = notifications.filter(n => !n.read).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -62,13 +95,43 @@ const StudentDashboard = () => {
               <p className="text-gray-600 mt-1">Học viện Công nghệ Bưu chính Viễn thông - Sinh viên</p>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="px-3 py-1">
-                Năm học 2024-2025
-              </Badge>
-              <Badge variant="outline" className="px-3 py-1">
-                Học kỳ 1
-              </Badge>
               <div className="flex items-center space-x-2">
+                <Select value={selectedYear} onValueChange={handleYearChange}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2024-2025">2024-2025</SelectItem>
+                    <SelectItem value="2023-2024">2023-2024</SelectItem>
+                    <SelectItem value="2022-2023">2022-2023</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={selectedSemester} onValueChange={handleSemesterChange}>
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="HK1">HK1</SelectItem>
+                    <SelectItem value="HK2">HK2</SelectItem>
+                    <SelectItem value="HK3">HK3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsNotificationOpen(true)}
+                  className="relative"
+                >
+                  <Bell className="w-4 h-4" />
+                  {unreadNotifications > 0 && (
+                    <Badge variant="destructive" className="absolute -top-2 -right-2 w-5 h-5 text-xs p-0 flex items-center justify-center">
+                      {unreadNotifications}
+                    </Badge>
+                  )}
+                </Button>
                 <span className="text-sm text-gray-600">Xin chào, {currentUser.name}</span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />
@@ -129,7 +192,7 @@ const StudentDashboard = () => {
                       <TableHead>Năm học</TableHead>
                       <TableHead>Xếp loại</TableHead>
                     </TableRow>
-                  </TableHeader>
+                  </TableHead>
                   <TableBody>
                     {mockStudentData.grades.map(grade => (
                       <TableRow 
@@ -160,51 +223,6 @@ const StudentDashboard = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Notifications */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Bell className="w-5 h-5" />
-                    Thông báo
-                    {unreadNotifications > 0 && (
-                      <Badge variant="destructive" className="ml-2">
-                        {unreadNotifications}
-                      </Badge>
-                    )}
-                  </CardTitle>
-                  <CardDescription>Thông báo từ giảng viên và nhà trường</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {mockStudentData.notifications.map(notification => (
-                  <div 
-                    key={notification.id} 
-                    className={`p-4 rounded-lg border ${
-                      !notification.read ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className={`font-medium ${!notification.read ? 'text-blue-900' : 'text-gray-900'}`}>
-                          {notification.title}
-                          {!notification.read && <Badge variant="destructive" className="ml-2 text-xs">Mới</Badge>}
-                        </h4>
-                        <p className={`text-sm mt-1 ${!notification.read ? 'text-blue-700' : 'text-gray-600'}`}>
-                          {notification.content}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-2">{notification.date}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 
@@ -212,6 +230,13 @@ const StudentDashboard = () => {
         subject={selectedSubject}
         isOpen={isDetailDialogOpen}
         onClose={() => setIsDetailDialogOpen(false)}
+      />
+
+      <NotificationPopup
+        isOpen={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
+        notifications={notifications}
+        onMarkAsRead={handleMarkAsRead}
       />
     </div>
   );

@@ -1,8 +1,10 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Users, BookOpen, GraduationCap, TrendingUp, School, Building, UserCheck, LogOut, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +20,8 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+  const [selectedYear, setSelectedYear] = useState("2024-2025");
+  const [selectedSemester, setSelectedSemester] = useState("HK1");
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
@@ -26,6 +30,22 @@ const AdminDashboard = () => {
       description: "Hẹn gặp lại!"
     });
     navigate("/login");
+  };
+
+  const handleYearChange = (year: string) => {
+    setSelectedYear(year);
+    toast({
+      title: "Đã thay đổi năm học",
+      description: `Năm học hiện tại: ${year}`
+    });
+  };
+
+  const handleSemesterChange = (semester: string) => {
+    setSelectedSemester(semester);
+    toast({
+      title: "Đã thay đổi học kỳ",
+      description: `Học kỳ hiện tại: ${semester}`
+    });
   };
 
   return (
@@ -39,12 +59,28 @@ const AdminDashboard = () => {
               <p className="text-gray-600 mt-1">Học viện Công nghệ Bưu chính Viễn thông - Quản trị viên</p>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="px-3 py-1">
-                Năm học 2024-2025
-              </Badge>
-              <Badge variant="outline" className="px-3 py-1">
-                Học kỳ 1
-              </Badge>
+              <div className="flex items-center space-x-2">
+                <Select value={selectedYear} onValueChange={handleYearChange}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2024-2025">2024-2025</SelectItem>
+                    <SelectItem value="2023-2024">2023-2024</SelectItem>
+                    <SelectItem value="2022-2023">2022-2023</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={selectedSemester} onValueChange={handleSemesterChange}>
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="HK1">HK1</SelectItem>
+                    <SelectItem value="HK2">HK2</SelectItem>
+                    <SelectItem value="HK3">HK3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-600">Xin chào, {currentUser.name}</span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>

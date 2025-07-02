@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,12 +21,12 @@ const mockSubjects = [
     description: "Môn học về lập trình hướng đối tượng với Java",
     prerequisites: ["IT1010", "IT2020"],
     teachers: [
-      { id: 1, name: "Đặng Anh Tuấn", code: "GV001" },
-      { id: 2, name: "Nguyễn Văn A", code: "GV002" }
+      { id: 1, name: "Đặng Anh Tuấn", code: "GV001" }
     ],
-    totalHours: 45,
-    theoryHours: 30,
-    practiceHours: 15,
+    startTime: "07:30",
+    endTime: "09:15",
+    dayOfWeek: "Thứ 2",
+    room: "TC-201",
     status: "active"
   },
   {
@@ -39,11 +38,12 @@ const mockSubjects = [
     description: "Môn học về thiết kế và quản lý cơ sở dữ liệu",
     prerequisites: ["IT3020"],
     teachers: [
-      { id: 1, name: "Đặng Anh Tuấn", code: "GV001" }
+      { id: 2, name: "Nguyễn Văn A", code: "GV002" }
     ],
-    totalHours: 45,
-    theoryHours: 30,
-    practiceHours: 15,
+    startTime: "13:30",
+    endTime: "15:15",
+    dayOfWeek: "Thứ 3",
+    room: "TC-102",
     status: "active"
   }
 ];
@@ -68,9 +68,10 @@ const SubjectManagement = () => {
     description: "",
     prerequisites: [],
     teachers: [],
-    totalHours: 45,
-    theoryHours: 30,
-    practiceHours: 15
+    startTime: "07:30",
+    endTime: "09:15",
+    dayOfWeek: "Thứ 2",
+    room: ""
   });
 
   const handleSubmit = () => {
@@ -116,9 +117,10 @@ const SubjectManagement = () => {
       description: "",
       prerequisites: [],
       teachers: [],
-      totalHours: 45,
-      theoryHours: 30,
-      practiceHours: 15
+      startTime: "07:30",
+      endTime: "09:15",
+      dayOfWeek: "Thứ 2",
+      room: ""
     });
   };
 
@@ -132,9 +134,10 @@ const SubjectManagement = () => {
       description: subject.description,
       prerequisites: subject.prerequisites,
       teachers: subject.teachers.map(t => t.id.toString()),
-      totalHours: subject.totalHours,
-      theoryHours: subject.theoryHours,
-      practiceHours: subject.practiceHours
+      startTime: subject.startTime,
+      endTime: subject.endTime,
+      dayOfWeek: subject.dayOfWeek,
+      room: subject.room
     });
     setIsDialogOpen(true);
   };
@@ -231,66 +234,70 @@ const SubjectManagement = () => {
 
               <div>
                 <Label>Thời gian học</Label>
-                <div className="grid grid-cols-3 gap-4 mt-2">
+                <div className="grid grid-cols-4 gap-2 mt-2">
                   <div>
-                    <Label htmlFor="totalHours" className="text-sm">Tổng số giờ</Label>
+                    <Label htmlFor="dayOfWeek" className="text-sm">Thứ</Label>
+                    <Select value={formData.dayOfWeek} onValueChange={(value) => setFormData({...formData, dayOfWeek: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Thứ 2">Thứ 2</SelectItem>
+                        <SelectItem value="Thứ 3">Thứ 3</SelectItem>
+                        <SelectItem value="Thứ 4">Thứ 4</SelectItem>
+                        <SelectItem value="Thứ 5">Thứ 5</SelectItem>
+                        <SelectItem value="Thứ 6">Thứ 6</SelectItem>
+                        <SelectItem value="Thứ 7">Thứ 7</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="startTime" className="text-sm">Giờ bắt đầu</Label>
                     <Input
-                      id="totalHours"
-                      type="number"
-                      value={formData.totalHours}
-                      onChange={(e) => setFormData({...formData, totalHours: parseInt(e.target.value)})}
+                      id="startTime"
+                      type="time"
+                      value={formData.startTime}
+                      onChange={(e) => setFormData({...formData, startTime: e.target.value})}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="theoryHours" className="text-sm">Giờ lý thuyết</Label>
+                    <Label htmlFor="endTime" className="text-sm">Giờ kết thúc</Label>
                     <Input
-                      id="theoryHours"
-                      type="number"
-                      value={formData.theoryHours}
-                      onChange={(e) => setFormData({...formData, theoryHours: parseInt(e.target.value)})}
+                      id="endTime"
+                      type="time"
+                      value={formData.endTime}
+                      onChange={(e) => setFormData({...formData, endTime: e.target.value})}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="practiceHours" className="text-sm">Giờ thực hành</Label>
+                    <Label htmlFor="room" className="text-sm">Phòng học</Label>
                     <Input
-                      id="practiceHours"
-                      type="number"
-                      value={formData.practiceHours}
-                      onChange={(e) => setFormData({...formData, practiceHours: parseInt(e.target.value)})}
+                      id="room"
+                      value={formData.room}
+                      onChange={(e) => setFormData({...formData, room: e.target.value})}
+                      placeholder="TC-201"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <Label>Giảng viên giảng dạy</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {mockTeachers.map(teacher => (
-                    <div key={teacher.id} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id={`teacher-${teacher.id}`}
-                        checked={formData.teachers.includes(teacher.id.toString())}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setFormData({
-                              ...formData,
-                              teachers: [...formData.teachers, teacher.id.toString()]
-                            });
-                          } else {
-                            setFormData({
-                              ...formData,
-                              teachers: formData.teachers.filter(t => t !== teacher.id.toString())
-                            });
-                          }
-                        }}
-                      />
-                      <label htmlFor={`teacher-${teacher.id}`} className="text-sm">
+                <Label>Giảng viên giảng dạy (chỉ chọn 1 giảng viên)</Label>
+                <Select 
+                  value={formData.teachers[0] || ""} 
+                  onValueChange={(value) => setFormData({...formData, teachers: value ? [value] : []})}
+                >
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Chọn giảng viên" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mockTeachers.map(teacher => (
+                      <SelectItem key={teacher.id} value={teacher.id.toString()}>
                         {teacher.code} - {teacher.name}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="flex justify-end gap-2">
@@ -348,9 +355,17 @@ const SubjectManagement = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-1 text-sm">
-                      <Clock className="w-4 h-4" />
-                      <span>{subject.totalHours}h</span>
+                    <div className="text-sm">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{subject.dayOfWeek}</span>
+                      </div>
+                      <div className="text-gray-600">
+                        {subject.startTime} - {subject.endTime}
+                      </div>
+                      <div className="text-gray-500">
+                        Phòng {subject.room}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>

@@ -1,37 +1,20 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, Edit, Plus, LogOut, Send, BookOpen, TrendingUp } from "lucide-react";
-import TeacherCreditClasses from "@/components/TeacherCreditClasses";
+import { GraduationCap, LogOut, Send, BookOpen, TrendingUp, Users } from "lucide-react";
 import GradeStatistics from "@/components/GradeStatistics";
-
-interface Grade {
-  id: number;
-  score: number;
-  semester: string;
-  academicYear: string;
-  studentId: string;
-  subjectId: number;
-  studentName?: string;
-}
-
-interface GradeForm {
-  studentId: string;
-  score: number;
-  semester: string;
-  academicYear: string;
-}
 
 interface NotificationForm {
   title: string;
@@ -39,36 +22,21 @@ interface NotificationForm {
   recipients: string;
 }
 
-const mockGrades: Grade[] = [
-  { id: 1, score: 8.5, semester: "HK1", academicYear: "2024-2025", studentId: "B24DCCC016", subjectId: 1, studentName: "Nguyễn Đức Anh" },
-  { id: 2, score: 9.0, semester: "HK1", academicYear: "2024-2025", studentId: "B24DCCC148", subjectId: 1, studentName: "Phạm Quốc Huy" },
-  { id: 3, score: 7.5, semester: "HK1", academicYear: "2024-2025", studentId: "B24DCC215", subjectId: 1, studentName: "Bùi Phương Ngọc" }
-];
-
 const mockStudents = [
-  { id: "B24DCCC016", name: "Nguyễn Đức Anh" },
-  { id: "B24DCCC148", name: "Phạm Quốc Huy" },
-  { id: "B24DCC215", name: "Bùi Phương Ngọc" }
+  { id: "B24DCCC016", name: "Nguyễn Đức Anh", class: "CNTT01" },
+  { id: "B24DCCC148", name: "Phạm Quốc Huy", class: "CNTT01" },
+  { id: "B24DCC215", name: "Bùi Phương Ngọc", class: "CNTT02" },
+  { id: "B24DCVT125", name: "Trần Văn Nam", class: "DTVT01" },
+  { id: "B24DCKT087", name: "Lê Thị Hoa", class: "KT01" }
 ];
 
 const TeacherDashboard = () => {
-  const [grades, setGrades] = useState<Grade[]>(mockGrades);
-  const [isGradeDialogOpen, setIsGradeDialogOpen] = useState(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
-  const [editingGrade, setEditingGrade] = useState<Grade | null>(null);
-  const [selectedCreditClass, setSelectedCreditClass] = useState(null);
+  const [selectedYear, setSelectedYear] = useState("2024-2025");
+  const [selectedSemester, setSelectedSemester] = useState("HK1");
   const navigate = useNavigate();
   const { toast } = useToast();
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
-
-  const gradeForm = useForm<GradeForm>({
-    defaultValues: {
-      studentId: "",
-      score: 0,
-      semester: "HK1",
-      academicYear: "2024-2025"
-    }
-  });
 
   const notificationForm = useForm<NotificationForm>({
     defaultValues: {
@@ -87,36 +55,20 @@ const TeacherDashboard = () => {
     navigate("/login");
   };
 
-  const onSubmitGrade = (data: GradeForm) => {
-    const student = mockStudents.find(s => s.id === data.studentId);
-    
-    if (editingGrade) {
-      setGrades(prev => prev.map(grade => 
-        grade.id === editingGrade.id 
-          ? { ...grade, ...data, studentName: student?.name }
-          : grade
-      ));
-      toast({
-        title: "Cập nhật điểm thành công",
-        description: "Điểm số đã được cập nhật!"
-      });
-    } else {
-      const newGrade: Grade = {
-        id: Date.now(),
-        ...data,
-        subjectId: 1, // Giả sử giảng viên dạy môn 1
-        studentName: student?.name
-      };
-      setGrades(prev => [...prev, newGrade]);
-      toast({
-        title: "Nhập điểm thành công",
-        description: "Điểm số đã được lưu!"
-      });
-    }
-    
-    setIsGradeDialogOpen(false);
-    setEditingGrade(null);
-    gradeForm.reset();
+  const handleYearChange = (year: string) => {
+    setSelectedYear(year);
+    toast({
+      title: "Đã thay đổi năm học",
+      description: `Năm học hiện tại: ${year}`
+    });
+  };
+
+  const handleSemesterChange = (semester: string) => {
+    setSelectedSemester(semester);
+    toast({
+      title: "Đã thay đổi học kỳ",
+      description: `Học kỳ hiện tại: ${semester}`
+    });
   };
 
   const onSubmitNotification = (data: NotificationForm) => {
@@ -126,23 +78,6 @@ const TeacherDashboard = () => {
     });
     setIsNotificationDialogOpen(false);
     notificationForm.reset();
-  };
-
-  const handleEditGrade = (grade: Grade) => {
-    setEditingGrade(grade);
-    gradeForm.reset({
-      studentId: grade.studentId,
-      score: grade.score,
-      semester: grade.semester,
-      academicYear: grade.academicYear
-    });
-    setIsGradeDialogOpen(true);
-  };
-
-  const handleAddGrade = () => {
-    setEditingGrade(null);
-    gradeForm.reset();
-    setIsGradeDialogOpen(true);
   };
 
   return (
@@ -156,12 +91,28 @@ const TeacherDashboard = () => {
               <p className="text-gray-600 mt-1">Học viện Công nghệ Bưu chính Viễn thông - Giảng viên</p>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="px-3 py-1">
-                Năm học 2024-2025
-              </Badge>
-              <Badge variant="outline" className="px-3 py-1">
-                Học kỳ 1
-              </Badge>
+              <div className="flex items-center space-x-2">
+                <Select value={selectedYear} onValueChange={handleYearChange}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2024-2025">2024-2025</SelectItem>
+                    <SelectItem value="2023-2024">2023-2024</SelectItem>
+                    <SelectItem value="2022-2023">2022-2023</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={selectedSemester} onValueChange={handleSemesterChange}>
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="HK1">HK1</SelectItem>
+                    <SelectItem value="HK2">HK2</SelectItem>
+                    <SelectItem value="HK3">HK3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-600">Xin chào, {currentUser.name}</span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -175,15 +126,11 @@ const TeacherDashboard = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs defaultValue="credit-classes" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm">
-            <TabsTrigger value="credit-classes" className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4" />
-              Lớp tín chỉ
-            </TabsTrigger>
-            <TabsTrigger value="grades" className="flex items-center gap-2">
-              <GraduationCap className="w-4 h-4" />
-              Quản lý điểm
+        <Tabs defaultValue="students" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 bg-white shadow-sm">
+            <TabsTrigger value="students" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Danh sách sinh viên
             </TabsTrigger>
             <TabsTrigger value="statistics" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
@@ -195,33 +142,41 @@ const TeacherDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="credit-classes">
-            <TeacherCreditClasses onSelectClass={setSelectedCreditClass} />
-          </TabsContent>
-
-          <TabsContent value="grades">
-            {selectedCreditClass ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quản lý điểm - {selectedCreditClass.name}</CardTitle>
-                  <CardDescription>Lớp {selectedCreditClass.code}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">Vui lòng chọn lớp tín chỉ từ tab "Lớp tín chỉ" để nhập điểm</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quản lý điểm số</CardTitle>
-                  <CardDescription>Vui lòng chọn lớp tín chỉ từ tab "Lớp tín chỉ" để nhập điểm</CardDescription>
-                </CardHeader>
-              </Card>
-            )}
+          <TabsContent value="students">
+            <Card>
+              <CardHeader>
+                <CardTitle>Danh sách sinh viên</CardTitle>
+                <CardDescription>Sinh viên trong lớp tín chỉ mà bạn phụ trách</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Mã sinh viên</TableHead>
+                      <TableHead>Họ tên</TableHead>
+                      <TableHead>Lớp</TableHead>
+                      <TableHead>Trạng thái</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockStudents.map((student) => (
+                      <TableRow key={student.id}>
+                        <TableCell className="font-medium">{student.id}</TableCell>
+                        <TableCell>{student.name}</TableCell>
+                        <TableCell>{student.class}</TableCell>
+                        <TableCell>
+                          <Badge variant="default">Đang học</Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="statistics">
-            <GradeStatistics />
+            <GradeStatistics hideSubjectFilter={true} />
           </TabsContent>
 
           <TabsContent value="notifications">
@@ -295,7 +250,6 @@ const TeacherDashboard = () => {
                                   <SelectContent>
                                     <SelectItem value="all">Tất cả sinh viên</SelectItem>
                                     <SelectItem value="class">Sinh viên trong lớp</SelectItem>
-                                    <SelectItem value="individual">Sinh viên cụ thể</SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />
