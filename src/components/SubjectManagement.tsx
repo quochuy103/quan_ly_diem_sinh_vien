@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Edit, Trash2, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,7 +22,10 @@ const mockSubjects = [
     department: "Công nghệ thông tin",
     description: "Môn học về lập trình hướng đối tượng với Java",
     prerequisites: ["IT1010", "IT2020"],
-    teacher: { id: 1, name: "Đặng Anh Tuấn", code: "GV001" },
+    teachers: [
+      { id: 1, name: "Đặng Anh Tuấn", code: "GV001" },
+      { id: 2, name: "Nguyễn Văn A", code: "GV002" }
+    ],
     startTime: "07:30",
     endTime: "09:15",
     dayOfWeek: "Thứ 2",
@@ -36,7 +40,9 @@ const mockSubjects = [
     department: "Công nghệ thông tin",
     description: "Môn học về thiết kế và quản lý cơ sở dữ liệu",
     prerequisites: ["IT3020"],
-    teacher: { id: 2, name: "Nguyễn Văn A", code: "GV002" },
+    teachers: [
+      { id: 3, name: "Trần Thị B", code: "GV003" }
+    ],
     startTime: "13:30",
     endTime: "15:15",
     dayOfWeek: "Thứ 3",
@@ -46,9 +52,17 @@ const mockSubjects = [
 ];
 
 const mockTeachers = [
-  { id: 1, name: "Đặng Anh Tuấn", code: "GV001" },
-  { id: 2, name: "Nguyễn Văn A", code: "GV002" },
-  { id: 3, name: "Trần Thị B", code: "GV003" }
+  { id: 1, name: "Đặng Anh Tuấn", code: "GV001", currentSubject: "IT3020" },
+  { id: 2, name: "Nguyễn Văn A", code: "GV002", currentSubject: "IT3020" },
+  { id: 3, name: "Trần Thị B", code: "GV003", currentSubject: "IT4020" },
+  { id: 4, name: "Lê Văn C", code: "GV004", currentSubject: null },
+  { id: 5, name: "Phạm Thị D", code: "GV005", currentSubject: null }
+];
+
+const mockDepartments = [
+  { code: "CNTT", name: "Công nghệ thông tin" },
+  { code: "DTVT", name: "Điện tử viễn thông" },
+  { code: "QTKD", name: "Quản trị kinh doanh" }
 ];
 
 const SubjectManagement = () => {
@@ -64,23 +78,45 @@ const SubjectManagement = () => {
     department: "",
     description: "",
     prerequisites: [],
-    teacher: "",
+    teachers: [],
     startTime: "07:30",
     endTime: "09:15",
     dayOfWeek: "Thứ 2",
     room: ""
   });
 
+  const getAvailableTeachers = () => {
+    if (editingSubject) {
+      return mockTeachers.filter(teacher => 
+        !teacher.currentSubject || 
+        editingSubject.teachers.some(t => t.id === teacher.id)
+      );
+    }
+    return mockTeachers.filter(teacher => !teacher.currentSubject);
+  };
+
+  const handleTeacherChange = (teacherId, checked) => {
+    if (checked) {
+      const teacher = mockTeachers.find(t => t.id === parseInt(teacherId));
+      setFormData(prev => ({
+        ...prev,
+        teachers: [...prev.teachers, teacher]
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        teachers: prev.teachers.filter(t => t.id !== parseInt(teacherId))
+      }));
+    }
+  };
+
   const handleSubmit = () => {
-    const selectedTeacher = mockTeachers.find(t => t.id === parseInt(formData.teacher));
-    
     if (editingSubject) {
       setSubjects(prev => prev.map(subject => 
         subject.id === editingSubject.id 
           ? { 
               ...subject, 
-              ...formData,
-              teacher: selectedTeacher
+              ...formData
             }
           : subject
       ));
@@ -92,7 +128,6 @@ const SubjectManagement = () => {
       const newSubject = {
         id: subjects.length + 1,
         ...formData,
-        teacher: selectedTeacher,
         status: "active"
       };
       setSubjects([...subjects, newSubject]);
@@ -111,7 +146,7 @@ const SubjectManagement = () => {
       department: "",
       description: "",
       prerequisites: [],
-      teacher: "",
+      teachers: [],
       startTime: "07:30",
       endTime: "09:15",
       dayOfWeek: "Thứ 2",
@@ -128,7 +163,7 @@ const SubjectManagement = () => {
       department: subject.department,
       description: subject.description,
       prerequisites: subject.prerequisites,
-      teacher: subject.teacher?.id.toString() || "",
+      teachers: subject.teachers || [],
       startTime: subject.startTime,
       endTime: subject.endTime,
       dayOfWeek: subject.dayOfWeek,
@@ -208,9 +243,11 @@ const SubjectManagement = () => {
                       <SelectValue placeholder="Chọn khoa" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Công nghệ thông tin">Công nghệ thông tin</SelectItem>
-                      <SelectItem value="Điện tử viễn thông">Điện tử viễn thông</SelectItem>
-                      <SelectItem value="Quản trị kinh doanh">Quản trị kinh doanh</SelectItem>
+                      {mockDepartments.map(dept => (
+                        <SelectItem key={dept.code} value={dept.name}>
+                          {dept.code} - {dept.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -278,21 +315,20 @@ const SubjectManagement = () => {
 
               <div>
                 <Label>Giảng viên giảng dạy</Label>
-                <Select 
-                  value={formData.teacher} 
-                  onValueChange={(value) => setFormData({...formData, teacher: value})}
-                >
-                  <SelectTrigger className="mt-2">
-                    <SelectValue placeholder="Chọn giảng viên" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockTeachers.map(teacher => (
-                      <SelectItem key={teacher.id} value={teacher.id.toString()}>
+                <div className="mt-2 space-y-2 max-h-32 overflow-y-auto">
+                  {getAvailableTeachers().map(teacher => (
+                    <div key={teacher.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`teacher-${teacher.id}`}
+                        checked={formData.teachers.some(t => t.id === teacher.id)}
+                        onCheckedChange={(checked) => handleTeacherChange(teacher.id.toString(), checked)}
+                      />
+                      <Label htmlFor={`teacher-${teacher.id}`} className="text-sm">
                         {teacher.code} - {teacher.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      </Label>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="flex justify-end gap-2">
@@ -341,11 +377,13 @@ const SubjectManagement = () => {
                   </TableCell>
                   <TableCell>{subject.department}</TableCell>
                   <TableCell>
-                    {subject.teacher && (
-                      <Badge variant="secondary" className="text-xs">
-                        {subject.teacher.code}
-                      </Badge>
-                    )}
+                    <div className="space-y-1">
+                      {subject.teachers?.map(teacher => (
+                        <Badge key={teacher.id} variant="secondary" className="text-xs mr-1">
+                          {teacher.code}
+                        </Badge>
+                      ))}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">

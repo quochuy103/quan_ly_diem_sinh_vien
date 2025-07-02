@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -153,6 +152,22 @@ const StudentDashboard = () => {
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="relative"
+                  onClick={() => setIsNotificationOpen(true)}
+                >
+                  <Bell className="w-4 h-4" />
+                  {unreadNotificationCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center text-xs p-0"
+                    >
+                      {unreadNotificationCount}
+                    </Badge>
+                  )}
+                </Button>
                 <Select value={selectedYear} onValueChange={handleYearChange}>
                   <SelectTrigger className="w-32">
                     <SelectValue />
@@ -175,22 +190,6 @@ const StudentDashboard = () => {
                 </Select>
               </div>
               <div className="flex items-center space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="relative"
-                  onClick={() => setIsNotificationOpen(true)}
-                >
-                  <Bell className="w-4 h-4" />
-                  {unreadNotificationCount > 0 && (
-                    <Badge 
-                      variant="destructive" 
-                      className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center text-xs p-0"
-                    >
-                      {unreadNotificationCount}
-                    </Badge>
-                  )}
-                </Button>
                 <span className="text-sm text-gray-600">Xin chào, {currentUser.name}</span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />

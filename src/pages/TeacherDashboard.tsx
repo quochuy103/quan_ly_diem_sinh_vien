@@ -14,7 +14,6 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, LogOut, Send, BookOpen, TrendingUp, Users } from "lucide-react";
-import GradeStatistics from "@/components/GradeStatistics";
 
 interface NotificationForm {
   title: string;
@@ -127,14 +126,10 @@ const TeacherDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="students" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white shadow-sm">
+          <TabsList className="grid w-full grid-cols-2 bg-white shadow-sm">
             <TabsTrigger value="students" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Danh sách sinh viên
-            </TabsTrigger>
-            <TabsTrigger value="statistics" className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
-              Thống kê
             </TabsTrigger>
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Send className="w-4 h-4" />
@@ -173,10 +168,6 @@ const TeacherDashboard = () => {
                 </Table>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="statistics">
-            <GradeStatistics hideSubjectFilter={true} />
           </TabsContent>
 
           <TabsContent value="notifications">
