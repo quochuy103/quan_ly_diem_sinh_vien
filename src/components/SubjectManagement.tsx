@@ -1,12 +1,37 @@
-
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit, Trash2, BookOpen, Clock } from "lucide-react";
@@ -23,12 +48,12 @@ const mockSubjects = [
     prerequisites: ["IT1010", "IT2020"],
     teachers: [
       { id: 1, name: "Đặng Anh Tuấn", code: "GV001" },
-      { id: 2, name: "Nguyễn Văn A", code: "GV002" }
+      { id: 2, name: "Nguyễn Văn A", code: "GV002" },
     ],
     totalHours: 45,
     theoryHours: 30,
     practiceHours: 15,
-    status: "active"
+    status: "active",
   },
   {
     id: 2,
@@ -38,20 +63,18 @@ const mockSubjects = [
     department: "Công nghệ thông tin",
     description: "Môn học về thiết kế và quản lý cơ sở dữ liệu",
     prerequisites: ["IT3020"],
-    teachers: [
-      { id: 1, name: "Đặng Anh Tuấn", code: "GV001" }
-    ],
+    teachers: [{ id: 1, name: "Đặng Anh Tuấn", code: "GV001" }],
     totalHours: 45,
     theoryHours: 30,
     practiceHours: 15,
-    status: "active"
-  }
+    status: "active",
+  },
 ];
 
 const mockTeachers = [
   { id: 1, name: "Đặng Anh Tuấn", code: "GV001" },
   { id: 2, name: "Nguyễn Văn A", code: "GV002" },
-  { id: 3, name: "Trần Thị B", code: "GV003" }
+  { id: 3, name: "Trần Thị B", code: "GV003" },
 ];
 
 const SubjectManagement = () => {
@@ -68,44 +91,47 @@ const SubjectManagement = () => {
     description: "",
     prerequisites: [],
     teachers: [],
-    totalHours: 45,
+    startDate: "",
+    endDate: "",
     theoryHours: 30,
-    practiceHours: 15
+    practiceHours: 15,
   });
 
   const handleSubmit = () => {
-    const selectedTeachers = formData.teachers.map(tId => 
-      mockTeachers.find(t => t.id === parseInt(tId))
-    ).filter(Boolean);
-    
+    const selectedTeachers = formData.teachers
+      .map((tId) => mockTeachers.find((t) => t.id === parseInt(tId)))
+      .filter(Boolean);
+
     if (editingSubject) {
-      setSubjects(prev => prev.map(subject => 
-        subject.id === editingSubject.id 
-          ? { 
-              ...subject, 
-              ...formData,
-              teachers: selectedTeachers
-            }
-          : subject
-      ));
+      setSubjects((prev) =>
+        prev.map((subject) =>
+          subject.id === editingSubject.id
+            ? {
+                ...subject,
+                ...formData,
+                teachers: selectedTeachers,
+              }
+            : subject
+        )
+      );
       toast({
         title: "Cập nhật thành công",
-        description: "Môn học đã được cập nhật"
+        description: "Môn học đã được cập nhật",
       });
     } else {
       const newSubject = {
         id: subjects.length + 1,
         ...formData,
         teachers: selectedTeachers,
-        status: "active"
+        status: "active",
       };
       setSubjects([...subjects, newSubject]);
       toast({
         title: "Thêm thành công",
-        description: "Môn học mới đã được thêm vào hệ thống"
+        description: "Môn học mới đã được thêm vào hệ thống",
       });
     }
-    
+
     setIsDialogOpen(false);
     setEditingSubject(null);
     setFormData({
@@ -116,9 +142,10 @@ const SubjectManagement = () => {
       description: "",
       prerequisites: [],
       teachers: [],
-      totalHours: 45,
+      startDate: "",
+      endDate: "",
       theoryHours: 30,
-      practiceHours: 15
+      practiceHours: 15,
     });
   };
 
@@ -131,19 +158,20 @@ const SubjectManagement = () => {
       department: subject.department,
       description: subject.description,
       prerequisites: subject.prerequisites,
-      teachers: subject.teachers.map(t => t.id.toString()),
-      totalHours: subject.totalHours,
+      teachers: subject.teachers.map((t) => t.id.toString()),
+      startDate: subject.startDate,
+      endDate: subject.endDate,
       theoryHours: subject.theoryHours,
-      practiceHours: subject.practiceHours
+      practiceHours: subject.practiceHours,
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = (subjectId) => {
-    setSubjects(prev => prev.filter(subject => subject.id !== subjectId));
+    setSubjects((prev) => prev.filter((subject) => subject.id !== subjectId));
     toast({
       title: "Xóa thành công",
-      description: "Môn học đã được xóa khỏi hệ thống"
+      description: "Môn học đã được xóa khỏi hệ thống",
     });
   };
 
@@ -152,7 +180,9 @@ const SubjectManagement = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Quản lý môn học</h2>
-          <p className="text-gray-600">Quản lý thông tin môn học và giảng viên giảng dạy</p>
+          <p className="text-gray-600">
+            Quản lý thông tin môn học và giảng viên giảng dạy
+          </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -167,7 +197,9 @@ const SubjectManagement = () => {
                 {editingSubject ? "Chỉnh sửa môn học" : "Thêm môn học mới"}
               </DialogTitle>
               <DialogDescription>
-                {editingSubject ? "Cập nhật thông tin môn học" : "Thêm môn học mới vào hệ thống"}
+                {editingSubject
+                  ? "Cập nhật thông tin môn học"
+                  : "Thêm môn học mới vào hệ thống"}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -177,7 +209,9 @@ const SubjectManagement = () => {
                   <Input
                     id="code"
                     value={formData.code}
-                    onChange={(e) => setFormData({...formData, code: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, code: e.target.value })
+                    }
                     placeholder="VD: IT3020"
                   />
                 </div>
@@ -186,12 +220,14 @@ const SubjectManagement = () => {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     placeholder="VD: Lập trình hướng đối tượng"
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="credits">Số tín chỉ</Label>
@@ -199,20 +235,37 @@ const SubjectManagement = () => {
                     id="credits"
                     type="number"
                     value={formData.credits}
-                    onChange={(e) => setFormData({...formData, credits: parseInt(e.target.value)})}
-                    min="1" max="6"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        credits: parseInt(e.target.value),
+                      })
+                    }
+                    min="1"
+                    max="6"
                   />
                 </div>
                 <div>
                   <Label htmlFor="department">Khoa</Label>
-                  <Select value={formData.department} onValueChange={(value) => setFormData({...formData, department: value})}>
+                  <Select
+                    value={formData.department}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, department: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn khoa" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Công nghệ thông tin">Công nghệ thông tin</SelectItem>
-                      <SelectItem value="Điện tử viễn thông">Điện tử viễn thông</SelectItem>
-                      <SelectItem value="Quản trị kinh doanh">Quản trị kinh doanh</SelectItem>
+                      <SelectItem value="Công nghệ thông tin">
+                        Công nghệ thông tin
+                      </SelectItem>
+                      <SelectItem value="Điện tử viễn thông">
+                        Điện tử viễn thông
+                      </SelectItem>
+                      <SelectItem value="Quản trị kinh doanh">
+                        Quản trị kinh doanh
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -223,7 +276,9 @@ const SubjectManagement = () => {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   placeholder="Nhập mô tả chi tiết về môn học..."
                   className="min-h-[80px]"
                 />
@@ -231,32 +286,31 @@ const SubjectManagement = () => {
 
               <div>
                 <Label>Thời gian học</Label>
-                <div className="grid grid-cols-3 gap-4 mt-2">
+                <div className="grid grid-cols-2 gap-4 mt-2">
                   <div>
-                    <Label htmlFor="totalHours" className="text-sm">Tổng số giờ</Label>
+                    <Label htmlFor="startDate" className="text-sm">
+                      Thời gian bắt đầu
+                    </Label>
                     <Input
-                      id="totalHours"
-                      type="number"
-                      value={formData.totalHours}
-                      onChange={(e) => setFormData({...formData, totalHours: parseInt(e.target.value)})}
+                      id="startDate"
+                      type="date"
+                      value={formData.startDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, startDate: e.target.value })
+                      }
                     />
                   </div>
                   <div>
-                    <Label htmlFor="theoryHours" className="text-sm">Giờ lý thuyết</Label>
+                    <Label htmlFor="endDate" className="text-sm">
+                      Thời gian kết thúc
+                    </Label>
                     <Input
-                      id="theoryHours"
-                      type="number"
-                      value={formData.theoryHours}
-                      onChange={(e) => setFormData({...formData, theoryHours: parseInt(e.target.value)})}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="practiceHours" className="text-sm">Giờ thực hành</Label>
-                    <Input
-                      id="practiceHours"
-                      type="number"
-                      value={formData.practiceHours}
-                      onChange={(e) => setFormData({...formData, practiceHours: parseInt(e.target.value)})}
+                      id="endDate"
+                      type="date"
+                      value={formData.endDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, endDate: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -265,27 +319,40 @@ const SubjectManagement = () => {
               <div>
                 <Label>Giảng viên giảng dạy</Label>
                 <div className="grid grid-cols-2 gap-2 mt-2">
-                  {mockTeachers.map(teacher => (
-                    <div key={teacher.id} className="flex items-center space-x-2">
+                  {mockTeachers.map((teacher) => (
+                    <div
+                      key={teacher.id}
+                      className="flex items-center space-x-2"
+                    >
                       <input
                         type="checkbox"
                         id={`teacher-${teacher.id}`}
-                        checked={formData.teachers.includes(teacher.id.toString())}
+                        checked={formData.teachers.includes(
+                          teacher.id.toString()
+                        )}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setFormData({
                               ...formData,
-                              teachers: [...formData.teachers, teacher.id.toString()]
+                              teachers: [
+                                ...formData.teachers,
+                                teacher.id.toString(),
+                              ],
                             });
                           } else {
                             setFormData({
                               ...formData,
-                              teachers: formData.teachers.filter(t => t !== teacher.id.toString())
+                              teachers: formData.teachers.filter(
+                                (t) => t !== teacher.id.toString()
+                              ),
                             });
                           }
                         }}
                       />
-                      <label htmlFor={`teacher-${teacher.id}`} className="text-sm">
+                      <label
+                        htmlFor={`teacher-${teacher.id}`}
+                        className="text-sm"
+                      >
                         {teacher.code} - {teacher.name}
                       </label>
                     </div>
@@ -331,7 +398,9 @@ const SubjectManagement = () => {
                   <TableCell>
                     <div>
                       <p className="font-medium">{subject.name}</p>
-                      <p className="text-sm text-gray-500 truncate max-w-xs">{subject.description}</p>
+                      <p className="text-sm text-gray-500 truncate max-w-xs">
+                        {subject.description}
+                      </p>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -341,7 +410,11 @@ const SubjectManagement = () => {
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {subject.teachers.map((teacher) => (
-                        <Badge key={teacher.id} variant="secondary" className="text-xs">
+                        <Badge
+                          key={teacher.id}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {teacher.code}
                         </Badge>
                       ))}
@@ -349,21 +422,34 @@ const SubjectManagement = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1 text-sm">
-                      <Clock className="w-4 h-4" />
-                      <span>{subject.totalHours}h</span>
+                      <span>
+                        {subject.startDate} - {subject.endDate}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={subject.status === 'active' ? 'default' : 'secondary'}>
-                      {subject.status === 'active' ? 'Hoạt động' : 'Ngừng'}
+                    <Badge
+                      variant={
+                        subject.status === "active" ? "default" : "secondary"
+                      }
+                    >
+                      {subject.status === "active" ? "Hoạt động" : "Ngừng"}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button size="sm" variant="outline" onClick={() => handleEdit(subject)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(subject)}
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(subject.id)}>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(subject.id)}
+                      >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>

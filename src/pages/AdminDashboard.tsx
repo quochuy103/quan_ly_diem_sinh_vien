@@ -1,9 +1,25 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, BookOpen, GraduationCap, TrendingUp, School, Building, UserCheck, LogOut, Calendar } from "lucide-react";
+import {
+  Users,
+  BookOpen,
+  GraduationCap,
+  TrendingUp,
+  School,
+  Building,
+  UserCheck,
+  LogOut,
+  Calendar,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import Dashboard from "@/components/Dashboard";
@@ -13,17 +29,30 @@ import StudentEnrollment from "@/components/StudentEnrollment";
 import TeacherManagement from "@/components/TeacherManagement";
 import AdministrativeClassManagement from "@/components/AdministrativeClassManagement";
 import SubjectManagement from "@/components/SubjectManagement";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import DepartmentManagement from "@/components/DepartmentManagement";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
 
+  const [academicYear, setAcademicYear] = useState("2024-2025");
+  const [semester, setSemester] = useState("1");
+  const academicYears = ["2022-2023", "2023-2024", "2024-2025", "2025-2026"];
+  const semesters = ["1", "2", "Hè"];
+
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
     toast({
       title: "Đăng xuất thành công",
-      description: "Hẹn gặp lại!"
+      description: "Hẹn gặp lại!",
     });
     navigate("/login");
   };
@@ -35,18 +64,46 @@ const AdminDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Hệ thống quản lý điểm sinh viên</h1>
-              <p className="text-gray-600 mt-1">Học viện Công nghệ Bưu chính Viễn thông - Quản trị viên</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Hệ thống quản lý điểm sinh viên
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Học viện Công nghệ Bưu chính Viễn thông - Quản trị viên
+              </p>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="px-3 py-1">
-                Năm học 2024-2025
-              </Badge>
-              <Badge variant="outline" className="px-3 py-1">
-                Học kỳ 1
-              </Badge>
+              <Select value={academicYear} onValueChange={setAcademicYear}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Năm học" />
+                </SelectTrigger>
+                <SelectContent>
+                  {academicYears.map((year) => (
+                    <SelectItem key={year} value={year}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={semester} onValueChange={setSemester}>
+                <SelectTrigger className="w-[100px]">
+                  <SelectValue placeholder="Học kỳ" />
+                </SelectTrigger>
+                <SelectContent>
+                  {semesters.map((sem) => (
+                    <SelectItem key={sem} value={sem}>
+                      {sem === "1"
+                        ? "Học kỳ 1"
+                        : sem === "2"
+                        ? "Học kỳ 2"
+                        : "Học kỳ hè"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Xin chào, {currentUser.name}</span>
+                <span className="text-sm text-gray-600">
+                  Xin chào, {currentUser.name}
+                </span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Đăng xuất
@@ -76,7 +133,10 @@ const AdminDashboard = () => {
               <UserCheck className="w-4 h-4" />
               Giảng viên
             </TabsTrigger>
-            <TabsTrigger value="departments" className="flex items-center gap-2">
+            <TabsTrigger
+              value="departments"
+              className="flex items-center gap-2"
+            >
               <Building className="w-4 h-4" />
               Khoa
             </TabsTrigger>
@@ -84,7 +144,10 @@ const AdminDashboard = () => {
               <School className="w-4 h-4" />
               Lớp HC
             </TabsTrigger>
-            <TabsTrigger value="credit-classes" className="flex items-center gap-2">
+            <TabsTrigger
+              value="credit-classes"
+              className="flex items-center gap-2"
+            >
               <Calendar className="w-4 h-4" />
               Lớp TC
             </TabsTrigger>
@@ -111,12 +174,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="departments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quản lý khoa</CardTitle>
-                <CardDescription>Chức năng này sẽ được triển khai sau</CardDescription>
-              </CardHeader>
-            </Card>
+            <DepartmentManagement />
           </TabsContent>
 
           <TabsContent value="classes">

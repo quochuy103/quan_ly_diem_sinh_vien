@@ -1,12 +1,37 @@
-
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Plus, Edit, Trash2, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -20,18 +45,27 @@ const mockTeachers = [
     phone: "0123456789",
     department: "Công nghệ thông tin",
     subjects: ["Lập trình hướng đối tượng", "Cơ sở dữ liệu"],
-    status: "active"
+    status: "active",
   },
   {
     id: 2,
-    code: "GV002", 
+    code: "GV002",
     name: "Nguyễn Văn A",
     email: "a.nv@ptit.edu.vn",
     phone: "0987654321",
     department: "Công nghệ thông tin",
     subjects: ["Cấu trúc dữ liệu"],
-    status: "active"
-  }
+    status: "active",
+  },
+];
+
+const mockSubjects = [
+  "Lập trình hướng đối tượng",
+  "Cơ sở dữ liệu",
+  "Cấu trúc dữ liệu",
+  "Mạng máy tính",
+  "Kinh tế vi mô",
+  "Kế toán tài chính",
 ];
 
 const TeacherManagement = () => {
@@ -47,37 +81,43 @@ const TeacherManagement = () => {
     email: "",
     phone: "",
     department: "",
-    subjects: []
+    subject: "",
   });
 
-  const filteredTeachers = teachers.filter(teacher =>
-    teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    teacher.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    teacher.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTeachers = teachers.filter(
+    (teacher) =>
+      teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      teacher.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      teacher.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSubmit = () => {
     if (editingTeacher) {
-      setTeachers(prev => prev.map(teacher => 
-        teacher.id === editingTeacher.id ? { ...teacher, ...formData } : teacher
-      ));
+      setTeachers((prev) =>
+        prev.map((teacher) =>
+          teacher.id === editingTeacher.id
+            ? { ...teacher, ...formData, subjects: [formData.subject] }
+            : teacher
+        )
+      );
       toast({
         title: "Cập nhật thành công",
-        description: "Thông tin giảng viên đã được cập nhật"
+        description: "Thông tin giảng viên đã được cập nhật",
       });
     } else {
       const newTeacher = {
         id: teachers.length + 1,
         ...formData,
-        status: "active"
+        subjects: [formData.subject],
+        status: "active",
       };
       setTeachers([...teachers, newTeacher]);
       toast({
         title: "Thêm thành công",
-        description: "Giảng viên mới đã được thêm vào hệ thống"
+        description: "Giảng viên mới đã được thêm vào hệ thống",
       });
     }
-    
+
     setIsDialogOpen(false);
     setEditingTeacher(null);
     setFormData({
@@ -86,7 +126,7 @@ const TeacherManagement = () => {
       email: "",
       phone: "",
       department: "",
-      subjects: []
+      subject: "",
     });
   };
 
@@ -98,16 +138,16 @@ const TeacherManagement = () => {
       email: teacher.email,
       phone: teacher.phone,
       department: teacher.department,
-      subjects: teacher.subjects
+      subject: teacher.subjects[0] || "",
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = (teacherId) => {
-    setTeachers(prev => prev.filter(teacher => teacher.id !== teacherId));
+    setTeachers((prev) => prev.filter((teacher) => teacher.id !== teacherId));
     toast({
       title: "Xóa thành công",
-      description: "Giảng viên đã được xóa khỏi hệ thống"
+      description: "Giảng viên đã được xóa khỏi hệ thống",
     });
   };
 
@@ -116,7 +156,9 @@ const TeacherManagement = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Quản lý giảng viên</h2>
-          <p className="text-gray-600">Quản lý thông tin giảng viên và phân công giảng dạy</p>
+          <p className="text-gray-600">
+            Quản lý thông tin giảng viên và phân công giảng dạy
+          </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -128,10 +170,14 @@ const TeacherManagement = () => {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingTeacher ? "Chỉnh sửa giảng viên" : "Thêm giảng viên mới"}
+                {editingTeacher
+                  ? "Chỉnh sửa giảng viên"
+                  : "Thêm giảng viên mới"}
               </DialogTitle>
               <DialogDescription>
-                {editingTeacher ? "Cập nhật thông tin giảng viên" : "Thêm giảng viên mới vào hệ thống"}
+                {editingTeacher
+                  ? "Cập nhật thông tin giảng viên"
+                  : "Thêm giảng viên mới vào hệ thống"}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -141,7 +187,9 @@ const TeacherManagement = () => {
                   <Input
                     id="code"
                     value={formData.code}
-                    onChange={(e) => setFormData({...formData, code: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, code: e.target.value })
+                    }
                     placeholder="VD: GV001"
                   />
                 </div>
@@ -150,12 +198,14 @@ const TeacherManagement = () => {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     placeholder="Nhập họ tên"
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="email">Email</Label>
@@ -163,7 +213,9 @@ const TeacherManagement = () => {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     placeholder="email@ptit.edu.vn"
                   />
                 </div>
@@ -172,7 +224,9 @@ const TeacherManagement = () => {
                   <Input
                     id="phone"
                     value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
                     placeholder="0123456789"
                   />
                 </div>
@@ -180,14 +234,45 @@ const TeacherManagement = () => {
 
               <div>
                 <Label htmlFor="department">Khoa</Label>
-                <Select value={formData.department} onValueChange={(value) => setFormData({...formData, department: value})}>
+                <Select
+                  value={formData.department}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, department: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Chọn khoa" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Công nghệ thông tin">Công nghệ thông tin</SelectItem>
-                    <SelectItem value="Điện tử viễn thông">Điện tử viễn thông</SelectItem>
-                    <SelectItem value="Quản trị kinh doanh">Quản trị kinh doanh</SelectItem>
+                    <SelectItem value="Công nghệ thông tin">
+                      Công nghệ thông tin
+                    </SelectItem>
+                    <SelectItem value="Điện tử viễn thông">
+                      Điện tử viễn thông
+                    </SelectItem>
+                    <SelectItem value="Quản trị kinh doanh">
+                      Quản trị kinh doanh
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="subject">Môn giảng dạy</Label>
+                <Select
+                  value={formData.subject}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, subject: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn môn học" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mockSubjects.map((subject) => (
+                      <SelectItem key={subject} value={subject}>
+                        {subject}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -209,7 +294,9 @@ const TeacherManagement = () => {
           <div className="flex justify-between items-center">
             <div>
               <CardTitle>Danh sách giảng viên</CardTitle>
-              <CardDescription>Tổng số: {teachers.length} giảng viên</CardDescription>
+              <CardDescription>
+                Tổng số: {teachers.length} giảng viên
+              </CardDescription>
             </div>
             <div className="flex items-center space-x-2">
               <Search className="w-4 h-4 text-gray-500" />
@@ -244,24 +331,36 @@ const TeacherManagement = () => {
                   <TableCell>{teacher.department}</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
-                      {teacher.subjects.map((subject, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {subject}
+                      {teacher.subjects && teacher.subjects[0] && (
+                        <Badge variant="secondary" className="text-xs">
+                          {teacher.subjects[0]}
                         </Badge>
-                      ))}
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={teacher.status === 'active' ? 'default' : 'secondary'}>
-                      {teacher.status === 'active' ? 'Hoạt động' : 'Ngừng'}
+                    <Badge
+                      variant={
+                        teacher.status === "active" ? "default" : "secondary"
+                      }
+                    >
+                      {teacher.status === "active" ? "Hoạt động" : "Ngừng"}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button size="sm" variant="outline" onClick={() => handleEdit(teacher)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(teacher)}
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(teacher.id)}>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(teacher.id)}
+                      >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
