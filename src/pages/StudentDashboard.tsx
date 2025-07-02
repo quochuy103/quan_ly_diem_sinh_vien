@@ -1,4 +1,4 @@
-
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, LogOut, BookOpen, TrendingUp, Bell } from "lucide-react";
+import SubjectDetailDialog from "@/components/SubjectDetailDialog";
 
 const mockStudentData = {
   profile: {
@@ -30,6 +31,8 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
@@ -40,8 +43,12 @@ const StudentDashboard = () => {
     navigate("/login");
   };
 
+  const handleSubjectClick = (subject) => {
+    setSelectedSubject(subject);
+    setIsDetailDialogOpen(true);
+  };
+
   const totalCredits = mockStudentData.grades.reduce((sum, grade) => sum + grade.credits, 0);
-  const averageGrade = mockStudentData.grades.reduce((sum, grade) => sum + grade.score, 0) / mockStudentData.grades.length;
   const unreadNotifications = mockStudentData.notifications.filter(n => !n.read).length;
 
   return (
@@ -76,7 +83,7 @@ const StudentDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
           {/* Profile and Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="md:col-span-2">
               <CardHeader>
                 <CardTitle>Thông tin cá nhân</CardTitle>
@@ -94,23 +101,12 @@ const StudentDashboard = () => {
 
             <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Tổng tín chỉ</CardTitle>
+                <CardTitle className="text-sm font-medium">Tổng tín chỉ đã học</CardTitle>
                 <BookOpen className="h-4 w-4" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalCredits}</div>
-                <p className="text-xs text-blue-100">Tín chỉ đã học</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Điểm TB</CardTitle>
-                <TrendingUp className="h-4 w-4" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{averageGrade.toFixed(1)}</div>
-                <p className="text-xs text-green-100">Điểm trung bình</p>
+                <p className="text-xs text-blue-100">Tín chỉ tích lũy</p>
               </CardContent>
             </Card>
           </div>
@@ -119,7 +115,7 @@ const StudentDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Bảng điểm</CardTitle>
-              <CardDescription>Điểm số các môn học trong học kỳ</CardDescription>
+              <CardDescription>Click vào môn học để xem chi tiết điểm số</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -136,7 +132,11 @@ const StudentDashboard = () => {
                   </TableHeader>
                   <TableBody>
                     {mockStudentData.grades.map(grade => (
-                      <TableRow key={grade.id}>
+                      <TableRow 
+                        key={grade.id} 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => handleSubjectClick(grade)}
+                      >
                         <TableCell className="font-medium">{grade.subjectName}</TableCell>
                         <TableCell>{grade.credits}</TableCell>
                         <TableCell>
@@ -207,6 +207,12 @@ const StudentDashboard = () => {
           </Card>
         </div>
       </div>
+
+      <SubjectDetailDialog 
+        subject={selectedSubject}
+        isOpen={isDetailDialogOpen}
+        onClose={() => setIsDetailDialogOpen(false)}
+      />
     </div>
   );
 };

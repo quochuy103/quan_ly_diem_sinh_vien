@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,7 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, Edit, Plus, LogOut, Send, BookOpen } from "lucide-react";
+import { GraduationCap, Edit, Plus, LogOut, Send, BookOpen, TrendingUp } from "lucide-react";
+import TeacherCreditClasses from "@/components/TeacherCreditClasses";
+import GradeStatistics from "@/components/GradeStatistics";
 
 interface Grade {
   id: number;
@@ -55,6 +56,7 @@ const TeacherDashboard = () => {
   const [isGradeDialogOpen, setIsGradeDialogOpen] = useState(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
   const [editingGrade, setEditingGrade] = useState<Grade | null>(null);
+  const [selectedCreditClass, setSelectedCreditClass] = useState(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
@@ -173,174 +175,56 @@ const TeacherDashboard = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs defaultValue="grades" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white shadow-sm">
+        <Tabs defaultValue="credit-classes" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm">
+            <TabsTrigger value="credit-classes" className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              Lớp tín chỉ
+            </TabsTrigger>
             <TabsTrigger value="grades" className="flex items-center gap-2">
               <GraduationCap className="w-4 h-4" />
               Quản lý điểm
+            </TabsTrigger>
+            <TabsTrigger value="statistics" className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" />
+              Thống kê
             </TabsTrigger>
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Send className="w-4 h-4" />
               Thông báo
             </TabsTrigger>
-            <TabsTrigger value="subject" className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4" />
-              Môn học
-            </TabsTrigger>
           </TabsList>
 
-          {/* Grades Management Tab */}
-          <TabsContent value="grades" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Quản lý điểm số</CardTitle>
-                    <CardDescription>Nhập và chỉnh sửa điểm cho sinh viên</CardDescription>
-                  </div>
-                  <Dialog open={isGradeDialogOpen} onOpenChange={setIsGradeDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button onClick={handleAddGrade} className="bg-blue-600 hover:bg-blue-700">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Nhập điểm
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>
-                          {editingGrade ? "Chỉnh sửa điểm" : "Nhập điểm mới"}
-                        </DialogTitle>
-                        <DialogDescription>
-                          {editingGrade ? "Cập nhật điểm cho sinh viên" : "Nhập điểm cho sinh viên"}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <Form {...gradeForm}>
-                        <form onSubmit={gradeForm.handleSubmit(onSubmitGrade)} className="space-y-4">
-                          <FormField
-                            control={gradeForm.control}
-                            name="studentId"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Sinh viên</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Chọn sinh viên" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {mockStudents.map(student => (
-                                      <SelectItem key={student.id} value={student.id}>
-                                        {student.id} - {student.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={gradeForm.control}
-                            name="score"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Điểm (0-10)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    type="number" 
-                                    min="0" 
-                                    max="10" 
-                                    step="0.1"
-                                    placeholder="Nhập điểm" 
-                                    {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={gradeForm.control}
-                            name="semester"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Học kỳ</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Chọn học kỳ" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="HK1">Học kỳ 1</SelectItem>
-                                    <SelectItem value="HK2">Học kỳ 2</SelectItem>
-                                    <SelectItem value="HK3">Học kỳ hè</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <div className="flex justify-end space-x-2">
-                            <Button type="button" variant="outline" onClick={() => setIsGradeDialogOpen(false)}>
-                              Hủy
-                            </Button>
-                            <Button type="submit">
-                              {editingGrade ? "Cập nhật" : "Lưu điểm"}
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Mã SV</TableHead>
-                        <TableHead>Họ tên</TableHead>
-                        <TableHead>Điểm</TableHead>
-                        <TableHead>Học kỳ</TableHead>
-                        <TableHead>Năm học</TableHead>
-                        <TableHead>Thao tác</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {grades.map(grade => (
-                        <TableRow key={grade.id}>
-                          <TableCell className="font-medium">{grade.studentId}</TableCell>
-                          <TableCell>{grade.studentName}</TableCell>
-                          <TableCell>
-                            <Badge variant={grade.score >= 8 ? "default" : grade.score >= 6.5 ? "secondary" : "destructive"}>
-                              {grade.score}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{grade.semester}</TableCell>
-                          <TableCell>{grade.academicYear}</TableCell>
-                          <TableCell>
-                            <Button size="sm" variant="outline" onClick={() => handleEditGrade(grade)}>
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="credit-classes">
+            <TeacherCreditClasses onSelectClass={setSelectedCreditClass} />
           </TabsContent>
 
-          {/* Notifications Tab */}
-          <TabsContent value="notifications" className="space-y-6">
+          <TabsContent value="grades">
+            {selectedCreditClass ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quản lý điểm - {selectedCreditClass.name}</CardTitle>
+                  <CardDescription>Lớp {selectedCreditClass.code}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600">Vui lòng chọn lớp tín chỉ từ tab "Lớp tín chỉ" để nhập điểm</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quản lý điểm số</CardTitle>
+                  <CardDescription>Vui lòng chọn lớp tín chỉ từ tab "Lớp tín chỉ" để nhập điểm</CardDescription>
+                </CardHeader>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="statistics">
+            <GradeStatistics />
+          </TabsContent>
+
+          <TabsContent value="notifications">
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
@@ -444,34 +328,6 @@ const TeacherDashboard = () => {
                     <h4 className="font-medium text-green-900">Lịch thi cuối kỳ</h4>
                     <p className="text-sm text-green-700 mt-1">Đã gửi lúc 09:15 - 18/12/2024</p>
                     <p className="text-green-800 mt-2">Lịch thi cuối kỳ học kỳ 1 năm học 2024-2025 đã được công bố.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Subject Tab */}
-          <TabsContent value="subject" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Môn học phụ trách</CardTitle>
-                <CardDescription>Thông tin về môn học bạn đang giảng dạy</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-4 bg-blue-50 rounded-lg">
-                    <h3 className="font-medium text-blue-900">Cơ sở dữ liệu</h3>
-                    <p className="text-sm text-blue-700 mt-1">Mã môn: CSDL001</p>
-                    <p className="text-sm text-blue-700">Số tín chỉ: 3</p>
-                    <p className="text-sm text-blue-700">Số sinh viên: {mockStudents.length}</p>
-                  </div>
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <h4 className="font-medium">Thống kê điểm</h4>
-                    <div className="mt-2 space-y-1">
-                      <p className="text-sm">Điểm trung bình: {(grades.reduce((sum, g) => sum + g.score, 0) / grades.length).toFixed(1)}</p>
-                      <p className="text-sm">Điểm cao nhất: {Math.max(...grades.map(g => g.score))}</p>
-                      <p className="text-sm">Điểm thấp nhất: {Math.min(...grades.map(g => g.score))}</p>
-                    </div>
                   </div>
                 </div>
               </CardContent>

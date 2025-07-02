@@ -10,6 +10,9 @@ import Dashboard from "@/components/Dashboard";
 import AccountManagement from "@/components/AccountManagement";
 import CreditClassManagement from "@/components/CreditClassManagement";
 import StudentEnrollment from "@/components/StudentEnrollment";
+import TeacherManagement from "@/components/TeacherManagement";
+import AdministrativeClassManagement from "@/components/AdministrativeClassManagement";
+import SubjectManagement from "@/components/SubjectManagement";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -56,7 +59,7 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9 bg-white shadow-sm">
+          <TabsList className="grid w-full grid-cols-8 bg-white shadow-sm">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               Dashboard
@@ -89,10 +92,6 @@ const AdminDashboard = () => {
               <BookOpen className="w-4 h-4" />
               Môn học
             </TabsTrigger>
-            <TabsTrigger value="grades" className="flex items-center gap-2">
-              <GraduationCap className="w-4 h-4" />
-              Điểm số
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard">
@@ -103,22 +102,12 @@ const AdminDashboard = () => {
             <AccountManagement />
           </TabsContent>
 
-          <TabsContent value="credit-classes">
-            <CreditClassManagement />
-          </TabsContent>
-
-          {/* Other tabs will be implemented as separate components */}
           <TabsContent value="students">
             <StudentEnrollment />
           </TabsContent>
 
           <TabsContent value="teachers">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quản lý giảng viên</CardTitle>
-                <CardDescription>Chức năng này sẽ được triển khai sau</CardDescription>
-              </CardHeader>
-            </Card>
+            <TeacherManagement />
           </TabsContent>
 
           <TabsContent value="departments">
@@ -131,30 +120,15 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="classes">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quản lý lớp hành chính</CardTitle>
-                <CardDescription>Chức năng này sẽ được triển khai sau</CardDescription>
-              </CardHeader>
-            </Card>
+            <AdministrativeClassManagement />
+          </TabsContent>
+
+          <TabsContent value="credit-classes">
+            <CreditClassManagement />
           </TabsContent>
 
           <TabsContent value="subjects">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quản lý môn học</CardTitle>
-                <CardDescription>Chức năng này sẽ được triển khai sau</CardDescription>
-              </CardHeader>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="grades">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quản lý điểm số</CardTitle>
-                <CardDescription>Chức năng này sẽ được triển khai sau</CardDescription>
-              </CardHeader>
-            </Card>
+            <SubjectManagement />
           </TabsContent>
         </Tabs>
       </div>
