@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Edit, Trash2, BookOpen, Clock } from "lucide-react";
+import { Plus, Edit, Trash2, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const mockSubjects = [
@@ -20,9 +21,7 @@ const mockSubjects = [
     department: "Công nghệ thông tin",
     description: "Môn học về lập trình hướng đối tượng với Java",
     prerequisites: ["IT1010", "IT2020"],
-    teachers: [
-      { id: 1, name: "Đặng Anh Tuấn", code: "GV001" }
-    ],
+    teacher: { id: 1, name: "Đặng Anh Tuấn", code: "GV001" },
     startTime: "07:30",
     endTime: "09:15",
     dayOfWeek: "Thứ 2",
@@ -37,9 +36,7 @@ const mockSubjects = [
     department: "Công nghệ thông tin",
     description: "Môn học về thiết kế và quản lý cơ sở dữ liệu",
     prerequisites: ["IT3020"],
-    teachers: [
-      { id: 2, name: "Nguyễn Văn A", code: "GV002" }
-    ],
+    teacher: { id: 2, name: "Nguyễn Văn A", code: "GV002" },
     startTime: "13:30",
     endTime: "15:15",
     dayOfWeek: "Thứ 3",
@@ -67,7 +64,7 @@ const SubjectManagement = () => {
     department: "",
     description: "",
     prerequisites: [],
-    teachers: [],
+    teacher: "",
     startTime: "07:30",
     endTime: "09:15",
     dayOfWeek: "Thứ 2",
@@ -75,9 +72,7 @@ const SubjectManagement = () => {
   });
 
   const handleSubmit = () => {
-    const selectedTeachers = formData.teachers.map(tId => 
-      mockTeachers.find(t => t.id === parseInt(tId))
-    ).filter(Boolean);
+    const selectedTeacher = mockTeachers.find(t => t.id === parseInt(formData.teacher));
     
     if (editingSubject) {
       setSubjects(prev => prev.map(subject => 
@@ -85,7 +80,7 @@ const SubjectManagement = () => {
           ? { 
               ...subject, 
               ...formData,
-              teachers: selectedTeachers
+              teacher: selectedTeacher
             }
           : subject
       ));
@@ -97,7 +92,7 @@ const SubjectManagement = () => {
       const newSubject = {
         id: subjects.length + 1,
         ...formData,
-        teachers: selectedTeachers,
+        teacher: selectedTeacher,
         status: "active"
       };
       setSubjects([...subjects, newSubject]);
@@ -116,7 +111,7 @@ const SubjectManagement = () => {
       department: "",
       description: "",
       prerequisites: [],
-      teachers: [],
+      teacher: "",
       startTime: "07:30",
       endTime: "09:15",
       dayOfWeek: "Thứ 2",
@@ -133,7 +128,7 @@ const SubjectManagement = () => {
       department: subject.department,
       description: subject.description,
       prerequisites: subject.prerequisites,
-      teachers: subject.teachers.map(t => t.id.toString()),
+      teacher: subject.teacher?.id.toString() || "",
       startTime: subject.startTime,
       endTime: subject.endTime,
       dayOfWeek: subject.dayOfWeek,
@@ -282,10 +277,10 @@ const SubjectManagement = () => {
               </div>
 
               <div>
-                <Label>Giảng viên giảng dạy (chỉ chọn 1 giảng viên)</Label>
+                <Label>Giảng viên giảng dạy</Label>
                 <Select 
-                  value={formData.teachers[0] || ""} 
-                  onValueChange={(value) => setFormData({...formData, teachers: value ? [value] : []})}
+                  value={formData.teacher} 
+                  onValueChange={(value) => setFormData({...formData, teacher: value})}
                 >
                   <SelectTrigger className="mt-2">
                     <SelectValue placeholder="Chọn giảng viên" />
@@ -346,13 +341,11 @@ const SubjectManagement = () => {
                   </TableCell>
                   <TableCell>{subject.department}</TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {subject.teachers.map((teacher) => (
-                        <Badge key={teacher.id} variant="secondary" className="text-xs">
-                          {teacher.code}
-                        </Badge>
-                      ))}
-                    </div>
+                    {subject.teacher && (
+                      <Badge variant="secondary" className="text-xs">
+                        {subject.teacher.code}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
