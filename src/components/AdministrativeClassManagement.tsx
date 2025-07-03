@@ -1,12 +1,37 @@
-
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Plus, Edit, Trash2, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -22,11 +47,11 @@ const mockAdminClasses = [
     teacherName: "Đặng Anh Tuấn",
     studentCount: 45,
     maxStudents: 50,
-    status: "active"
+    status: "active",
   },
   {
     id: 2,
-    code: "D24CQCN02-B", 
+    code: "D24CQCN02-B",
     name: "Công nghệ thông tin 02",
     department: "Công nghệ thông tin",
     course: "2024-2028",
@@ -34,14 +59,14 @@ const mockAdminClasses = [
     teacherName: "Nguyễn Văn A",
     studentCount: 42,
     maxStudents: 50,
-    status: "active"
-  }
+    status: "active",
+  },
 ];
 
 const mockTeachers = [
   { id: 1, name: "Đặng Anh Tuấn", code: "GV001" },
   { id: 2, name: "Nguyễn Văn A", code: "GV002" },
-  { id: 3, name: "Trần Thị B", code: "GV003" }
+  { id: 3, name: "Trần Thị B", code: "GV003" },
 ];
 
 const AdministrativeClassManagement = () => {
@@ -56,26 +81,30 @@ const AdministrativeClassManagement = () => {
     department: "",
     course: "",
     teacherId: "",
-    maxStudents: 50
+    maxStudents: 50,
   });
 
   const handleSubmit = () => {
-    const teacher = mockTeachers.find(t => t.id === parseInt(formData.teacherId));
-    
+    const teacher = mockTeachers.find(
+      (t) => t.id === parseInt(formData.teacherId)
+    );
+
     if (editingClass) {
-      setAdminClasses(prev => prev.map(cls => 
-        cls.id === editingClass.id 
-          ? { 
-              ...cls, 
-              ...formData, 
-              teacherId: parseInt(formData.teacherId),
-              teacherName: teacher?.name || ""
-            }
-          : cls
-      ));
+      setAdminClasses((prev) =>
+        prev.map((cls) =>
+          cls.id === editingClass.id
+            ? {
+                ...cls,
+                ...formData,
+                teacherId: parseInt(formData.teacherId),
+                teacherName: teacher?.name || "",
+              }
+            : cls
+        )
+      );
       toast({
         title: "Cập nhật thành công",
-        description: "Lớp hành chính đã được cập nhật"
+        description: "Lớp hành chính đã được cập nhật",
       });
     } else {
       const newClass = {
@@ -84,15 +113,15 @@ const AdministrativeClassManagement = () => {
         teacherId: parseInt(formData.teacherId),
         teacherName: teacher?.name || "",
         studentCount: 0,
-        status: "active"
+        status: "active",
       };
       setAdminClasses([...adminClasses, newClass]);
       toast({
         title: "Thêm thành công",
-        description: "Lớp hành chính mới đã được tạo"
+        description: "Lớp hành chính mới đã được tạo",
       });
     }
-    
+
     setIsDialogOpen(false);
     setEditingClass(null);
     setFormData({
@@ -101,7 +130,7 @@ const AdministrativeClassManagement = () => {
       department: "",
       course: "",
       teacherId: "",
-      maxStudents: 50
+      maxStudents: 50,
     });
   };
 
@@ -113,16 +142,16 @@ const AdministrativeClassManagement = () => {
       department: cls.department,
       course: cls.course,
       teacherId: cls.teacherId.toString(),
-      maxStudents: cls.maxStudents
+      maxStudents: cls.maxStudents,
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = (classId) => {
-    setAdminClasses(prev => prev.filter(cls => cls.id !== classId));
+    setAdminClasses((prev) => prev.filter((cls) => cls.id !== classId));
     toast({
       title: "Xóa thành công",
-      description: "Lớp hành chính đã được xóa"
+      description: "Lớp hành chính đã được xóa",
     });
   };
 
@@ -131,7 +160,9 @@ const AdministrativeClassManagement = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Quản lý lớp hành chính</h2>
-          <p className="text-gray-600">Quản lý các lớp hành chính và giảng viên chủ nhiệm</p>
+          <p className="text-gray-600">
+            Quản lý các lớp hành chính và giảng viên chủ nhiệm
+          </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -143,10 +174,14 @@ const AdministrativeClassManagement = () => {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingClass ? "Chỉnh sửa lớp hành chính" : "Thêm lớp hành chính mới"}
+                {editingClass
+                  ? "Chỉnh sửa lớp hành chính"
+                  : "Thêm lớp hành chính mới"}
               </DialogTitle>
               <DialogDescription>
-                {editingClass ? "Cập nhật thông tin lớp hành chính" : "Tạo lớp hành chính mới"}
+                {editingClass
+                  ? "Cập nhật thông tin lớp hành chính"
+                  : "Tạo lớp hành chính mới"}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -156,7 +191,9 @@ const AdministrativeClassManagement = () => {
                   <Input
                     id="code"
                     value={formData.code}
-                    onChange={(e) => setFormData({...formData, code: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, code: e.target.value })
+                    }
                     placeholder="VD: D24CQCN01-B"
                   />
                 </div>
@@ -165,29 +202,47 @@ const AdministrativeClassManagement = () => {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     placeholder="VD: Công nghệ thông tin 01"
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="department">Khoa</Label>
-                  <Select value={formData.department} onValueChange={(value) => setFormData({...formData, department: value})}>
+                  <Select
+                    value={formData.department}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, department: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn khoa" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Công nghệ thông tin">Công nghệ thông tin</SelectItem>
-                      <SelectItem value="Điện tử viễn thông">Điện tử viễn thông</SelectItem>
-                      <SelectItem value="Quản trị kinh doanh">Quản trị kinh doanh</SelectItem>
+                      <SelectItem value="Công nghệ thông tin">
+                        Công nghệ thông tin
+                      </SelectItem>
+                      <SelectItem value="Điện tử viễn thông">
+                        Điện tử viễn thông
+                      </SelectItem>
+                      <SelectItem value="Quản trị kinh doanh">
+                        Quản trị kinh doanh
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label htmlFor="course">Khóa học</Label>
-                  <Select value={formData.course} onValueChange={(value) => setFormData({...formData, course: value})}>
+                  <Select
+                    value={formData.course}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, course: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn khóa học" />
                     </SelectTrigger>
@@ -203,13 +258,21 @@ const AdministrativeClassManagement = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="teacher">Giảng viên chủ nhiệm</Label>
-                  <Select value={formData.teacherId} onValueChange={(value) => setFormData({...formData, teacherId: value})}>
+                  <Select
+                    value={formData.teacherId}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, teacherId: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn giảng viên" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockTeachers.map(teacher => (
-                        <SelectItem key={teacher.id} value={teacher.id.toString()}>
+                      {mockTeachers.map((teacher) => (
+                        <SelectItem
+                          key={teacher.id}
+                          value={teacher.id.toString()}
+                        >
                           {teacher.code} - {teacher.name}
                         </SelectItem>
                       ))}
@@ -222,7 +285,12 @@ const AdministrativeClassManagement = () => {
                     id="maxStudents"
                     type="number"
                     value={formData.maxStudents}
-                    onChange={(e) => setFormData({...formData, maxStudents: parseInt(e.target.value)})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        maxStudents: parseInt(e.target.value),
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -252,7 +320,7 @@ const AdministrativeClassManagement = () => {
                 <TableHead>Tên lớp</TableHead>
                 <TableHead>Khoa</TableHead>
                 <TableHead>Khóa học</TableHead>
-                <TableHead>GVCN</TableHead>
+                <TableHead>CVHT</TableHead>
                 <TableHead>Sĩ số</TableHead>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead>Thao tác</TableHead>
@@ -269,20 +337,34 @@ const AdministrativeClassManagement = () => {
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Users className="w-4 h-4" />
-                      <span>{cls.studentCount}/{cls.maxStudents}</span>
+                      <span>
+                        {cls.studentCount}/{cls.maxStudents}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={cls.status === 'active' ? 'default' : 'secondary'}>
-                      {cls.status === 'active' ? 'Hoạt động' : 'Ngừng'}
+                    <Badge
+                      variant={
+                        cls.status === "active" ? "default" : "secondary"
+                      }
+                    >
+                      {cls.status === "active" ? "Hoạt động" : "Ngừng"}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button size="sm" variant="outline" onClick={() => handleEdit(cls)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(cls)}
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(cls.id)}>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(cls.id)}
+                      >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>

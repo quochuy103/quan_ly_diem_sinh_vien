@@ -316,6 +316,7 @@ const TeacherManagement = () => {
                 <TableHead>Mã GV</TableHead>
                 <TableHead>Họ tên</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Số điện thoại</TableHead>
                 <TableHead>Khoa</TableHead>
                 <TableHead>Môn giảng dạy</TableHead>
                 <TableHead>Trạng thái</TableHead>
@@ -328,6 +329,7 @@ const TeacherManagement = () => {
                   <TableCell className="font-medium">{teacher.code}</TableCell>
                   <TableCell>{teacher.name}</TableCell>
                   <TableCell>{teacher.email}</TableCell>
+                  <TableCell>{teacher.phone}</TableCell>
                   <TableCell>{teacher.department}</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
